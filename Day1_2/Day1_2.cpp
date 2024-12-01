@@ -1,0 +1,32 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+
+int main()
+{
+    std::ifstream stream("..\\input1.txt");
+    std::string line;
+    std::vector<int> data1, data2;
+    int pos = 0;
+    while (std::getline(stream, line)) {
+        std::istringstream iss(line);
+        int num1, num2;
+        iss >> num1 >> num2;
+        data1.push_back(num1);
+        data2.push_back(num2);
+        ++pos;
+    }
+    int64_t sum = 0;
+    for (int i = 0; i < data1.size(); ++i) {
+        int count = 0;
+        for (int j = 0; j < data2.size(); ++j) {
+            count += data1[i] == data2[j];
+        }
+        sum += int64_t(count) * int64_t(data1[i]);
+    }
+    std::cout << sum << std::endl;
+    return 0;
+}
