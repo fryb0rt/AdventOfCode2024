@@ -5,10 +5,6 @@
 #include <vector>
 #include <algorithm>
 
-bool isDigit(char c) {
-	return c >= '0' && c <= '9';
-}
-
 int main()
 {
 	std::ifstream stream("..\\input4.txt");
