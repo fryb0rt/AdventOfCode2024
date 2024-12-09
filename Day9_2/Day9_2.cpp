@@ -38,55 +38,47 @@ int main()
 		}
 		free = !free;
 	}
-	int64_t lastID = disk.size() + 1;
-	for (int i = disk.size() - 1; i >= 0; --i) {
-		if (disk[i].free) {
-			continue;
-		}
-		if (disk[i].ID >= lastID) {
-			continue;
-		}
-		lastID = disk[i].ID;
-		/*for (int k = 0; k < disk.size(); ++k) {
-			for (int l = 0; l < disk[k].length; ++l) {
-				if (disk[k].free) {
-					std::cout << ".";
-				}
-				else {
-					std::cout << disk[k].ID;
-				}
+	int64_t lastID = ID - 1;
+	while (lastID > 0) {
+		for (int i = disk.size() - 1; i >= 0; --i) {
+			if (disk[i].free) {
+				continue;
 			}
-		}
-		std::cout << std::endl;*/
-
-		for (int j = 0; j < i - 1; ++j) {
-			if (disk[j].free && disk[j].length >= disk[i].length) {
-				int freeRemainder = disk[j].length - disk[i].length;
-				disk[j] = disk[i];
-				disk[i].free = true;
-
-				// Fix first region
-				if (freeRemainder > 0) {
-					if (disk[j + 1].free) {
-						disk[j + 1].length += freeRemainder;
+			if (disk[i].ID != lastID) {
+				continue;
+			}
+			lastID = disk[i].ID - 1;
+			/*for (int k = 0; k < disk.size(); ++k) {
+				for (int l = 0; l < disk[k].length; ++l) {
+					if (disk[k].free) {
+						std::cout << ".";
 					}
 					else {
-						disk.insert(disk.begin() + j + 1, Space{ -1, true, freeRemainder });
-						++i;
+						std::cout << disk[k].ID;
 					}
 				}
-				// Fix second region
-				/*if (i > 0 && disk[i - 1].free) {
-					disk[i - 1].length += disk[i].length;
-					disk.erase(disk.begin() + i);
-					--i;
-				}
-				if (i + 1 < disk.size() && disk[i + 1].free) {
-					disk[i].length += disk[i + 1].length;
-					disk.erase(disk.begin() + i + 1);
-				}*/
-				break;
 			}
+			std::cout << std::endl;*/
+
+			for (int j = 0; j < i; ++j) {
+				if (disk[j].free && disk[j].length >= disk[i].length) {
+					int freeRemainder = disk[j].length - disk[i].length;
+					disk[j] = disk[i];
+					disk[i].free = true;
+
+					// Fix first region
+					if (freeRemainder > 0) {
+						if (disk[j + 1].free) {
+							disk[j + 1].length += freeRemainder;
+						}
+						else {
+							disk.insert(disk.begin() + j + 1, Space{ -1, true, freeRemainder });
+						}
+					}
+					break;
+				}
+			}
+			break;
 		}
 	}
 	int64_t index = 0;
