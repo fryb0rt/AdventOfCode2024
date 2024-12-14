@@ -6,18 +6,6 @@
 #include <algorithm>
 #include <set>
 
-int64_t solve(int64_t aX, int64_t aY, int64_t bX, int64_t bY, int64_t priceX, int64_t priceY) {
-	const int64_t det = aX * bY - bX * aY;
-	if (det != 0) {
-		const int64_t a = priceX * bY - priceY * bX;
-		const int64_t b = priceY * aX - priceX * aY;
-		if (a % det == 0 && b % det == 0) {
-			return (a * 3 + b * 1) / det;
-		}
-	}
-	return 0;
-}
-
 struct Robot {
 	int x, y;
 	int vx, vy;
@@ -30,18 +18,12 @@ int simulate(Robot r, int maxx, int maxy, int steps) {
 		r.x %= maxx;
 	} else {
 		r.x += ((-r.x + maxx - 1) / maxx) * maxx;
-		/*while (r.x < 0) {
-			r.x += maxx;
-		}*/
 	}
 	if (r.y >= 0) {
 		r.y %= maxy;
 	}
 	else {
 		r.y += ((-r.y + maxy - 1) / maxy) * maxy;
-		/*while (r.y < 0) {
-			r.y += maxy;
-		}*/
 	}
 	int middleX = maxx / 2;
 	int middleY = maxy / 2;
