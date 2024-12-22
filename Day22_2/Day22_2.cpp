@@ -7,19 +7,19 @@
 #include <set>
 #include <queue>
 
-struct s {
-	int seq[4];
-	bool operator<(const s& other) const {
-		return seq[0] < other.seq[0] || (seq[0] == other.seq[0] && (seq[1] < other.seq[1] || seq[1] == other.seq[1] && (seq[2] < other.seq[2] || seq[2] == other.seq[2] && (seq[3] < other.seq[3]))));
-	}
+struct Seq
+{
+	int value = 0;
+	int last = -1;
 };
 int main()
 {
 	std::ifstream stream("..\\input22.txt");
 	std::string line;
-	int64_t sum = 0;
+	int sum = 0;
 	std::vector<std::vector<int>> changes;
 	std::vector<std::vector<int>> values;
+	std::vector<Seq> sequences(19 * 19 * 19 * 19);
 	while (std::getline(stream, line)) {
 		std::istringstream iss(line);
 		int64_t value;
@@ -31,52 +31,26 @@ int main()
 			value = (value ^ (value * 64)) % 16777216;
 			value = (value ^ (value / 32)) % 16777216;
 			value = (value ^ (value * 2048)) % 16777216;
-			changes.back().push_back(value % 10 - prev % 10);
+			changes.back().push_back((value % 10 - prev % 10) + 9);
 			values.back().push_back(value % 10);
 		}
 	}
-	std::set<s> sequences;
 	for (int k = 0; k < changes.size(); ++k) {
 		auto& v = changes[k];
 		for (int i = 0; i < v.size() - 3; ++i) {
-			s t;
+			int index = 0;
 			for (int j = 0; j < 4; ++j) {
-				t.seq[j] = v[i + j];
+				index = index * 19 + v[i + j];
 			}
-			sequences.insert(t);
+			if (sequences[index].last != k) {
+				sequences[index].last = k;
+				sequences[index].value += values[k][i + 3];
+			}
 		}
 	}
 
-	std::cout << sequences.size() << std::endl;
-	std::vector<s> seqVector;
-	for (auto& s : sequences) {
-		seqVector.push_back(s);
-	}
-	std::vector<int64_t> sums(seqVector.size(), 0);
-#pragma omp parallel for num_threads(16)
-	for (int j = 0; j < seqVector.size();++j) {
-		const auto & seq = seqVector[j].seq;
-		int64_t sumCurr = 0;
-		for (int k = 0; k < changes.size(); ++k) {
-			auto& v = changes[k];
-			for (int i = 0; i < v.size() - 3; ++i) {
-				bool found = true;
-				for (int j = 0; j < 4; ++j) {
-					if (v[i + j] != seq[j]) {
-						found = false;
-						break;
-					}
-				}
-				if (found) {
-					sumCurr += values[k][i + 3];
-					break;
-				}
-			}
-		}
-		sums[j] = sumCurr;
-	}
-	for (auto& i : sums) {
-		sum = std::max(i, sum);
+	for (auto& i : sequences) {
+		sum = std::max(i.value, sum);
 	}
 	std::cout << sum << std::endl;
 	return 0;
